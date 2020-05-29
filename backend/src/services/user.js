@@ -1,20 +1,36 @@
+const bcrypt = require('bcrypt-nodejs');
+const ValidationError = require('../errors/ValidationError');
+
 module.exports = (app) => {
-    const findAll = (filter = {}) => {
-        return app.db('users').where(filter).select();
+    const findAll = () => {
+        return app.db('users').select(
+            ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone']
+        );
+    };
+
+    const findOne = (filter = {}) => {
+        return app.db('users').where(filter).first();
+    };
+
+    const getPasswdHash = (passwd) => {
+        const salt = bcrypt.genSaltSync(10);
+        return bcrypt.hashSync(passwd, salt);
     };
     
     const save = async (user) => {
-        if(!user.name) return { error: 'Name is a required attribute' };
-        if(!user.mail) return { error: 'Email is a required attribute' };
-        if(!user.cpf) return { error: 'CPF is a required attribute' };
-        if(!user.license) return { error: 'License is a required attribute' };
-        if(!user.passwd) return { error: 'Password is a required attribute' };
+        if(!user.name) throw new ValidationError('Name is a required attribute');
+        if(!user.mail) throw new ValidationError('Email is a required attribute');
+        if(!user.cpf) throw new ValidationError('CPF is a required attribute');
+        if(!user.license) throw new ValidationError('License is a required attribute');
+        if(!user.passwd) throw new ValidationError('Password is a required attribute');
 
-        const userDb = await findAll({mail: user.mail});
-        if(userDb && userDb.length > 0) return { error: 'Already exists a user with that email' }
+        const userDb = await findOne({mail: user.mail});
+        if(userDb) throw new ValidationError('Already exists a user with that email');
 
-        return app.db('users').insert(user, '*');
+        user.passwd = getPasswdHash(user.passwd);
+
+        return app.db('users').insert(user, ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone']);
     };
 
-    return { findAll, save };
+    return { findAll, save, findOne };
 }

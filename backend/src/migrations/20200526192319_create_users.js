@@ -9,7 +9,7 @@ exports.up = (knex) => {
         t.date('dt_birth');
         t.string('phone', 15);
         t.string('license', 30).notNull().unique();
-        t.string('passwd', 50).notNull();
+        t.string('passwd').notNull();
     })
 };
 
