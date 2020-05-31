@@ -1,15 +1,7 @@
 const request = require('supertest');
 const app = require('../../src/app');
+const {genCpf, genLicense} = require('../utils');
 
-function genCpf() {
-    const part1 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const part2 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const part3 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const dig1 = ("" + Math.floor(Math.random() * 9)).padStart(1, '0');
-    const dig2 = ("" + Math.floor(Math.random() * 9)).padStart(1, '0');
-
-    return `${part1}.${part2}.${part3}-${dig1}${dig2}`; 
-}
 const genMail = `${Date.now()}@mail.com`;
 
 test('Must create a user by way of signup', () => {
@@ -21,7 +13,7 @@ test('Must create a user by way of signup', () => {
             cpf: genCpf(),
             dt_birth: new Date(),
             phone: '12345678910',
-            license: `${Date.now()}`,
+            license: genLicense(),
             passwd: '123456'
         }).then((res) => {
             expect(res.status).toBe(201);
@@ -42,7 +34,7 @@ test('Must store receive a token when logging', () => {
         cpf: genCpf(),
         dt_birth: new Date(),
         phone: '12345678910',
-        license: `${Date.now()}`,
+        license: genLicense(),
         passwd: '123456'
     }).then(() => request(app).post('/auth/signin')
         .send({mail: genMail, passwd: '123456'}))
@@ -60,7 +52,7 @@ test('Must not authenticate user with invalid password', () => {
         cpf: genCpf(),
         dt_birth: new Date(),
         phone: '12345678910',
-        license: `${Date.now()}`,
+        license: genLicense(),
         passwd: '123456'
     }).then(() => request(app).post('/auth/signin')
         .send({mail: genMail, passwd: '654321'}))

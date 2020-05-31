@@ -1,23 +1,10 @@
 const request = require('supertest');
 const jwt = require('jwt-simple');
+const {genCpf, genLicense} = require('../utils');
 
 const app = require('../../src/app');
 
-function genCpf() {
-    const part1 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const part2 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const part3 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
-    const dig1 = ("" + Math.floor(Math.random() * 9)).padStart(1, '0');
-    const dig2 = ("" + Math.floor(Math.random() * 9)).padStart(1, '0');
-
-    return `${part1}.${part2}.${part3}-${dig1}${dig2}`; 
-}
-function genLicense() {
-    return `${Date.now()}`;
-}
-
 const genMail = `${Date.now()}@mail.com`;
-
 let user;
 
 beforeAll(async () => {
@@ -35,7 +22,7 @@ beforeAll(async () => {
     user.token = jwt.encode(user, 'Segredo!');
 })
 
-test('Should list all users', () => {
+test('Must list all users', () => {
     return request(app).get('/users')
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
@@ -44,7 +31,7 @@ test('Should list all users', () => {
         })
 });
 
-test('Should insert a user successfully', () => {
+test('Must insert a user successfully', () => {
     return request(app).post('/users')
         .send({ 
             name: 'Asteroide', 
@@ -88,17 +75,17 @@ describe('When trying to insert an invalid user', () => {
             });
     };
 
-    test('Should not insert user without name', () => 
+    test('Must not insert user without name', () => 
         testTemplate({name: null}, 'Name is a required attribute'));
-    test('Should not insert user without email', () => 
+    test('Must not insert user without email', () => 
         testTemplate({mail: null}, 'Email is a required attribute'));
-    test('Should not insert user without cpf', () => 
+    test('Must not insert user without cpf', () => 
         testTemplate({cpf: null}, 'CPF is a required attribute'));
-    test('Should not insert user without license', () => 
+    test('Must not insert user without license', () => 
         testTemplate({license: null}, 'License is a required attribute'));
-    test('Should not insert user without password', () => 
+    test('Must not insert user without password', () => 
         testTemplate({passwd: null}, 'Password is a required attribute'));
-    test('Should not insert email already existing', () => 
+    test('Must not insert email already existing', () => 
         testTemplate({mail: genMail}, 'Already exists a user with that email'));
 
 });

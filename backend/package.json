@@ -2,15 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "author": "Eduardo Moritz",
+  "license": "ISC",
   "main": "index.js",
   "scripts": {
     "start": "node src/server",
     "test": "jest",
     "secure-mode": "jest --watch --verbose=false"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [],  
   "devDependencies": {
     "jest": "23.6.0",
     "supertest": "3.3.0"

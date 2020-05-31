@@ -7,4 +7,15 @@ module.exports = (app) => {
         .all(app.config.passport.authenticate())
         .get(app.routes.users.findAll)
         .post(app.routes.users.create)
+
+    app.route('/schedules')
+        .all(app.config.passport.authenticate())
+        .get(app.routes.schedules.getAll)
+        .post(app.routes.schedules.create)
+
+    app.route('/schedules/:id')
+        .all(app.config.passport.authenticate())
+        .get(app.routes.schedules.get)
+        .put(app.routes.schedules.update)
+        .delete(app.routes.schedules.remove)
 }
