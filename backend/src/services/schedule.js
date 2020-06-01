@@ -1,10 +1,8 @@
 const ValidationError = require('../errors/ValidationError');
 
 module.exports = (app) => {
-    const findAll = () => {
-        return app.db('schedules').select(
-            ['id', 'dt_reservation', 'check_in', 'check_out', 'user_id']
-        );
+    const findAll = (user_id) => {
+        return app.db('schedules').where(user_id);
     };
 
     const findOne = (filter = {}) => {
@@ -14,6 +12,9 @@ module.exports = (app) => {
     const save = async (schedules) => {
         if(!schedules.dt_reservation) throw new ValidationError('Scheduling date is a required attribute');
 
+        const checkOut = await findOne({user_id: schedules.user_id, check_out: null})
+        if(checkOut) throw new ValidationError('Should check_out the old schedule');
+        
         return app.db('schedules').insert(schedules, ['id', 'dt_reservation', 'check_in', 'check_out', 'user_id']);
     };
 

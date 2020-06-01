@@ -4,7 +4,7 @@ const {genCpf, genLicense} = require('../utils');
 
 const genMail = `${Date.now()}@mail.com`;
 
-test('Must create a user by way of signup', () => {
+test('Should create a user by way of signup', () => {
     return request(app).post('/auth/signup')
         .send({
             name: 'Asteroide', 
@@ -26,7 +26,7 @@ test('Must create a user by way of signup', () => {
 });
 
 
-test('Must store receive a token when logging', () => {
+test('Should store receive a token when logging', () => {
     return app.services.user.save({
         name: 'Asteroide', 
         last_name: 'Silverio',
@@ -44,7 +44,7 @@ test('Must store receive a token when logging', () => {
         });
 });
 
-test('Must not authenticate user with invalid password', () => {
+test('Should not authenticate user with invalid password', () => {
     return app.services.user.save({
         name: 'Asteroide', 
         last_name: 'Silverio',
@@ -62,7 +62,7 @@ test('Must not authenticate user with invalid password', () => {
         });
 });
 
-test('Must not authenticate user with invalid user', () => {
+test('Should not authenticate user with invalid user', () => {
     return request(app).post('/auth/signin')
         .send({mail: 'notExist@mail.com', passwd: '654321'})
         .then((res) => {
@@ -71,7 +71,7 @@ test('Must not authenticate user with invalid user', () => {
         });
 });
 
-test('Must not access a protected route without a token', () => {
+test('Should not access a protected route without a token', () => {
     return request(app).get('/users')
         .then((res) => {
             expect(res.status).toBe(401);

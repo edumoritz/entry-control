@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 function genCpf() {
     const part1 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
     const part2 = ("" + Math.floor(Math.random() * 999)).padStart(3, '0');
@@ -10,5 +12,8 @@ function genCpf() {
 function genLicense() {
     return `${Date.now()}`;
 }
+function formatDateTime(date) {
+ return moment(date).format("MMM Do YYYY h:mm:ss a");
+}
 
-module.exports = {genCpf, genLicense}
+module.exports = {genCpf, genLicense, formatDateTime}

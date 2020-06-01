@@ -22,7 +22,7 @@ beforeAll(async () => {
     user.token = jwt.encode(user, 'Segredo!');
 })
 
-test('Must list all users', () => {
+test('Should list all users', () => {
     return request(app).get('/users')
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
@@ -31,7 +31,7 @@ test('Must list all users', () => {
         })
 });
 
-test('Must insert a user successfully', () => {
+test('Should insert a user successfully', () => {
     return request(app).post('/users')
         .send({ 
             name: 'Asteroide', 
@@ -75,22 +75,22 @@ describe('When trying to insert an invalid user', () => {
             });
     };
 
-    test('Must not insert user without name', () => 
+    test('Should not insert user without name', () => 
         testTemplate({name: null}, 'Name is a required attribute'));
-    test('Must not insert user without email', () => 
+    test('Should not insert user without email', () => 
         testTemplate({mail: null}, 'Email is a required attribute'));
-    test('Must not insert user without cpf', () => 
+    test('Should not insert user without cpf', () => 
         testTemplate({cpf: null}, 'CPF is a required attribute'));
-    test('Must not insert user without license', () => 
+    test('Should not insert user without license', () => 
         testTemplate({license: null}, 'License is a required attribute'));
-    test('Must not insert user without password', () => 
+    test('Should not insert user without password', () => 
         testTemplate({passwd: null}, 'Password is a required attribute'));
-    test('Must not insert email already existing', () => 
+    test('Should not insert email already existing', () => 
         testTemplate({mail: genMail}, 'Already exists a user with that email'));
 
 });
 
-test('Must store one encrypted password ', async () => {
+test('Should store one encrypted password ', async () => {
     const res = await request(app).post('/users')
         .send({ 
             name: 'Asteroide', 
