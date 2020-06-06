@@ -4,6 +4,7 @@ const {genCpf, genLicense} = require('../utils');
 
 const app = require('../../src/app');
 
+const MAIN_ROUTE = '/v1/users';
 const genMail = `${Date.now()}@mail.com`;
 let user;
 
@@ -23,7 +24,7 @@ beforeAll(async () => {
 })
 
 test('Should list all users', () => {
-    return request(app).get('/users')
+    return request(app).get(MAIN_ROUTE)
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
             expect(res.status).toBe(200);
@@ -32,7 +33,7 @@ test('Should list all users', () => {
 });
 
 test('Should insert a user successfully', () => {
-    return request(app).post('/users')
+    return request(app).post(MAIN_ROUTE)
         .send({ 
             name: 'Asteroide', 
             last_name: 'Silverio',
@@ -55,7 +56,7 @@ test('Should insert a user successfully', () => {
 describe('When trying to insert an invalid user', () => {
 
     const testTemplate = (newData, errorMessage) => {
-        return request(app).post('/users')
+        return request(app).post(MAIN_ROUTE)
             .send(
                 {
                     name: 'Asteroide', 
@@ -91,7 +92,7 @@ describe('When trying to insert an invalid user', () => {
 });
 
 test('Should store one encrypted password ', async () => {
-    const res = await request(app).post('/users')
+    const res = await request(app).post(MAIN_ROUTE)
         .send({ 
             name: 'Asteroide', 
             last_name: 'Silverio',

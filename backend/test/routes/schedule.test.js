@@ -3,7 +3,7 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 const {genCpf, genLicense} = require('../utils');
 
-const MAIN_ROUTE = '/schedules';
+const MAIN_ROUTE = '/v1/schedules';
 let user;
 let user2;
 const reservation = new Date();
