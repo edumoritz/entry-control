@@ -6,6 +6,8 @@ module.exports = (app) => {
     };
 
     const findOne = (filter = {}) => {
+        // const id = app.db('schedules').where(filter).first();
+        // console.log(id)
         return app.db('schedules').where(filter).first();
     };
     

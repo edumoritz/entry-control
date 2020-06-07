@@ -1,7 +1,17 @@
 const express = require('express');
 
+const RecursoIndevidoError = require('../errors/RecursoIndevidoError');
+
 module.exports = (app) => {
   const router = express.Router();
+
+  router.param('id', (req, res, next) => {
+    app.services.schedule.findOne({id: req.params.id})
+      .then((sh) => {
+        if(sh.user_id !== req.user.id) throw new RecursoIndevidoError();
+        else next();
+      }).catch(err => next(err)); 
+  });
 
   router.get('/', (req, res, next) => {
     app.services.schedule.findAll({ user_id: req.user.id })
@@ -11,11 +21,7 @@ module.exports = (app) => {
 
   router.get('/:id', (req, res, next) => {
     app.services.schedule.findOne({ id: req.params.id })
-      .then((result) => {
-        if (result.user_id !== req.params.id)
-          return res.status(403).json({ error: 'This resource does not belong to the user' });
-        return res.status(200).json(result);
-      })
+      .then((result) => res.status(200).json(result))
       .catch(err => next(err));
   });
 
