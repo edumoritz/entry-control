@@ -4,7 +4,7 @@ const ValidationError = require('../errors/ValidationError');
 module.exports = (app) => {
     const findAll = () => {
         return app.db('users').select(
-            ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone']
+            ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone', 'admin']
         );
     };
 
@@ -21,15 +21,16 @@ module.exports = (app) => {
         if(!user.name) throw new ValidationError('Name is a required attribute');
         if(!user.mail) throw new ValidationError('Email is a required attribute');
         if(!user.cpf) throw new ValidationError('CPF is a required attribute');
-        if(!user.license) throw new ValidationError('License is a required attribute');
         if(!user.passwd) throw new ValidationError('Password is a required attribute');
+        if(user.admin === null ||
+          user.admin === "undefined") throw new ValidationError('Admin is a required attribute');
 
         const userDb = await findOne({mail: user.mail});
         if(userDb) throw new ValidationError('Already exists a user with that email');
 
         user.passwd = getPasswdHash(user.passwd);
 
-        return app.db('users').insert(user, ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone']);
+        return app.db('users').insert(user, ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone', 'admin']);
     };
 
     return { findAll, save, findOne };

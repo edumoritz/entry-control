@@ -9,11 +9,8 @@ function genCpf() {
 
     return `${part1}.${part2}.${part3}-${dig1}${dig2}`; 
 }
-function genLicense() {
-    return `${Date.now()}`;
-}
 function formatDateTime(date) {
  return moment(date).format("MMM Do YYYY h:mm:ss a");
 }
 
-module.exports = {genCpf, genLicense, formatDateTime}
+module.exports = {genCpf, formatDateTime}

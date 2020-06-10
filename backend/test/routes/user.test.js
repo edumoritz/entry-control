@@ -1,6 +1,6 @@
 const request = require('supertest');
 const jwt = require('jwt-simple');
-const {genCpf, genLicense} = require('../utils');
+const {genCpf} = require('../utils');
 
 const app = require('../../src/app');
 
@@ -16,7 +16,7 @@ beforeAll(async () => {
         cpf: genCpf(),
         dt_birth: new Date(),
         phone: '12345678910',
-        license: genLicense(),
+        admin: false,
         passwd: '123456'
     });
     user = { ...res[0] };
@@ -41,7 +41,7 @@ test('Should insert a user successfully', () => {
             cpf: genCpf(),
             dt_birth: new Date(),
             phone: '12345678910',
-            license: genLicense(),
+            admin: false,
             passwd: '123456'
 
         }).set('authorization', `bearer ${user.token}`)
@@ -49,7 +49,7 @@ test('Should insert a user successfully', () => {
             expect(res.status).toBe(201);
             expect(res.body.name).toBe('Asteroide');
             expect(res.body).not.toHaveProperty('passwd');
-            expect(res.body).not.toHaveProperty('license');
+            // expect(res.body).not.toHaveProperty('admin');
         });
 });
 
@@ -61,11 +61,11 @@ describe('When trying to insert an invalid user', () => {
                 {
                     name: 'Asteroide', 
                     last_name: 'Silverio',
-                    mail: genMail,
+                    mail: `${Date.now()}@mail.com`,
                     cpf: genCpf(),
                     dt_birth: new Date(),
                     phone: '12345678910',
-                    license: genLicense(),
+                    admin: false,
                     passwd: '123456',
                     ...newData
                 },
@@ -82,8 +82,8 @@ describe('When trying to insert an invalid user', () => {
         testTemplate({mail: null}, 'Email is a required attribute'));
     test('Should not insert user without cpf', () => 
         testTemplate({cpf: null}, 'CPF is a required attribute'));
-    test('Should not insert user without license', () => 
-        testTemplate({license: null}, 'License is a required attribute'));
+    test('Should not insert user without admin', () => 
+        testTemplate({admin: null}, 'Admin is a required attribute'));
     test('Should not insert user without password', () => 
         testTemplate({passwd: null}, 'Password is a required attribute'));
     test('Should not insert email already existing', () => 
@@ -100,7 +100,7 @@ test('Should store one encrypted password ', async () => {
             cpf: genCpf(),
             dt_birth: new Date(),
             phone: '12345678910',
-            license: genLicense(),
+            admin: false,
             passwd: '123456'
         }).set('authorization', `bearer ${user.token}`)
 
@@ -111,6 +111,10 @@ test('Should store one encrypted password ', async () => {
         expect(userDB.passwd).not.toBeUndefined();
         expect(userDB.passwd).not.toBe('123456');
 });
+
+test.skip('Somente admin deve cadastrar novo usuário', () => {});
+test.skip('Somente admin deve alterar usuário', () => {});
+test.skip('Somente admin deve remover usuário', () => {});
 
 
 
