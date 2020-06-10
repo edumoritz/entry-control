@@ -45,6 +45,12 @@ An example of a layout not yet developed: [Figma](https://www.figma.com/file/N8u
 
 The backend contains tests made with jest, to run the tests you need to use the command:
 ```bash
+# Create the database
+$ npm run knex:migrate
+
+# Create the admin
+$ npm run knex:seed
+
 # Go into the test 
 $ npm run secure-mode
 ```
