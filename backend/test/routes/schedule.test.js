@@ -1,7 +1,7 @@
 const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
-const { genCpf, genLicense } = require('../utils');
+const { genCpf } = require('../utils');
 
 const MAIN_ROUTE = '/v1/schedules';
 let user;
@@ -16,7 +16,7 @@ beforeAll(async () => {
     cpf: genCpf(),
     dt_birth: new Date(),
     phone: '12345678910',
-    license: genLicense(),
+    admin: false,
     passwd: '123456'
   })
   const res2 = await app.services.user.save({
@@ -26,7 +26,7 @@ beforeAll(async () => {
     cpf: genCpf(),
     dt_birth: new Date(),
     phone: '12345678910',
-    license: genLicense(),
+    admin: false,
     passwd: '123456'
   })
 
@@ -165,3 +165,5 @@ test('Must not delete another user*s schedule', async () => {
     });
 });
 
+test.skip('Somente admin deve realizar check_in do usuario', () => {});
+test.skip('Somente admin deve realizar check_out do usuario', () => {});

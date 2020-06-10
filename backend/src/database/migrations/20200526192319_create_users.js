@@ -8,7 +8,7 @@ exports.up = (knex) => {
         t.string('cpf', 15).notNull().unique();
         t.date('dt_birth');
         t.string('phone', 15);
-        t.string('license', 30).notNull().unique();
+        t.boolean('admin').notNull();
         t.string('passwd').notNull();
     })
 };

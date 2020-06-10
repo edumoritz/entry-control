@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../src/app');
-const {genCpf, genLicense} = require('../utils');
+const {genCpf} = require('../utils');
 
 const genMail = `${Date.now()}@mail.com`;
 
@@ -13,14 +13,14 @@ test('Should create a user by way of signup', () => {
             cpf: genCpf(),
             dt_birth: new Date(),
             phone: '12345678910',
-            license: genLicense(),
+            admin: false,
             passwd: '123456'
         }).then((res) => {
             expect(res.status).toBe(201);
             expect(res.body.name).toBe('Asteroide');
             expect(res.body).toHaveProperty('mail');
             expect(res.body).toHaveProperty('cpf');
-            expect(res.body).not.toHaveProperty('license');
+            // expect(res.body).not.toHaveProperty('admin');
             expect(res.body).not.toHaveProperty('passwd');
         })
 });
@@ -34,7 +34,7 @@ test('Should store receive a token when logging', () => {
         cpf: genCpf(),
         dt_birth: new Date(),
         phone: '12345678910',
-        license: genLicense(),
+        admin: false,
         passwd: '123456'
     }).then(() => request(app).post('/auth/signin')
         .send({mail: genMail, passwd: '123456'}))
@@ -52,7 +52,7 @@ test('Should not authenticate user with invalid password', () => {
         cpf: genCpf(),
         dt_birth: new Date(),
         phone: '12345678910',
-        license: genLicense(),
+        admin: false,
         passwd: '123456'
     }).then(() => request(app).post('/auth/signin')
         .send({mail: genMail, passwd: '654321'}))
