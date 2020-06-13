@@ -165,5 +165,5 @@ test('Must not delete another user*s schedule', async () => {
     });
 });
 
-test.skip('Somente admin deve realizar check_in do usuario', () => {});
-test.skip('Somente admin deve realizar check_out do usuario', () => {});
+test.skip('Somente admin deve realizar check_in do usuario', () => { });
+test.skip('Somente admin deve realizar check_out do usuario', () => { });

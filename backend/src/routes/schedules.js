@@ -6,11 +6,11 @@ module.exports = (app) => {
   const router = express.Router();
 
   router.param('id', (req, res, next) => {
-    app.services.schedule.findOne({id: req.params.id})
+    app.services.schedule.findOne({ id: req.params.id })
       .then((sh) => {
-        if(sh.user_id !== req.user.id) throw new RecursoIndevidoError();
+        if (sh.user_id !== req.user.id) throw new RecursoIndevidoError();
         else next();
-      }).catch(err => next(err)); 
+      }).catch(err => next(err));
   });
 
   router.get('/', (req, res, next) => {
