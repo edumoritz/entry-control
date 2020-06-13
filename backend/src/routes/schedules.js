@@ -1,5 +1,5 @@
 const express = require('express');
-
+const jwt = require('jwt-simple');
 const RecursoIndevidoError = require('../errors/RecursoIndevidoError');
 
 module.exports = (app) => {
@@ -25,15 +25,16 @@ module.exports = (app) => {
       .catch(err => next(err));
   });
 
-  router.post('/', (req, res, next) => {
+  router.post('/', (req, res, next) => {    
     app.services.schedule.save({ ...req.body, user_id: req.user.id })
       .then((result) => {
         return res.status(201).json(result[0]);
       }).catch(err => next(err));
   });
 
-  router.put('/:id', (req, res, next) => {
-    app.services.schedule.update(req.params.id, req.body)
+  router.put('/:id', async (req, res, next) => {        
+    const userAdmin = decodeToken(req.headers.authorization.split(' ')[1]);
+    app.services.schedule.update(req.params.id, req.body, userAdmin)
       .then(result => res.status(200).json(result[0]))
       .catch(err => next(err));
   });
@@ -45,4 +46,9 @@ module.exports = (app) => {
   });
 
   return router;
+}
+
+const decodeToken = (token) => {
+  var decoded = jwt.decode(token, 'Segredo!', 'HS256');
+  return decoded.admin;
 }

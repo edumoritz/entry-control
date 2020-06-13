@@ -7,20 +7,34 @@ const app = require('../../src/app');
 const MAIN_ROUTE = '/v1/users';
 const genMail = `${Date.now()}@mail.com`;
 let user;
+let authUser;
 
 beforeAll(async () => {
   const res = await app.services.user.save({
-    name: 'Asteroide',
+    name: 'Admin',
     last_name: 'Silverio',
     mail: genMail,
+    cpf: genCpf(),
+    dt_birth: new Date(),
+    phone: '12345678910',
+    admin: true,
+    passwd: '123456'
+  });
+  user = { ...res[0] };
+  user.token = jwt.encode(user, 'Segredo!');
+
+  const res2 = await app.services.user.save({
+    name: 'NoAdmin',
+    last_name: 'Silverio',
+    mail: `${new Date()}@mail.com`,
     cpf: genCpf(),
     dt_birth: new Date(),
     phone: '12345678910',
     admin: false,
     passwd: '123456'
   });
-  user = { ...res[0] };
-  user.token = jwt.encode(user, 'Segredo!');
+  authUser = { ...res2[0] };
+  authUser.token = jwt.encode(authUser, 'Segredo!');
 })
 
 test('Should list all users', () => {
@@ -48,8 +62,8 @@ test('Should insert a user successfully', () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe('Asteroide');
+      expect(user.admin).toBe(true);
       expect(res.body).not.toHaveProperty('passwd');
-      // expect(res.body).not.toHaveProperty('admin');
     });
 });
 
@@ -89,6 +103,7 @@ describe('When trying to insert an invalid user', () => {
   test('Should not insert email already existing', () =>
     testTemplate({ mail: genMail }, 'Already exists a user with that email'));
 
+
 });
 
 test('Should store one encrypted password ', async () => {
@@ -112,9 +127,28 @@ test('Should store one encrypted password ', async () => {
   expect(userDB.passwd).not.toBe('123456');
 });
 
-test.skip('Somente admin deve cadastrar novo usuário', () => { });
-test.skip('Somente admin deve alterar usuário', () => { });
-test.skip('Somente admin deve remover usuário', () => { });
+test('Only administrator user must register a new user', async () => {  
+
+  return request(app).post(MAIN_ROUTE)
+    .send(
+      {
+        name: 'Asteroide',
+        last_name: 'Silverio',
+        mail: `${Date.now()}@mail.com`,
+        cpf: genCpf(),
+        dt_birth: new Date(),
+        phone: '12345678910',
+        admin: false,
+        passwd: '123456'
+      },
+    ).set('authorization', `bearer ${authUser.token}`)
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(authUser.admin).toBe(false);
+      expect(res.body.error).toBe('User is not an administrator');
+    });
+
+});
 
 
 

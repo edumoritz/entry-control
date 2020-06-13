@@ -6,34 +6,50 @@ const { genCpf } = require('../utils');
 const MAIN_ROUTE = '/v1/schedules';
 let user;
 let user2;
+let user3;
 const reservation = new Date();
 
 beforeAll(async () => {
+  
   const res = await app.services.user.save({
-    name: 'User',
+    name: 'User Admin',
     last_name: 'Account',
     mail: `${Date.now()}@mail.com`,
     cpf: genCpf(),
     dt_birth: new Date(),
     phone: '12345678910',
-    admin: false,
+    admin: true,
     passwd: '123456'
-  })
+  });
   const res2 = await app.services.user.save({
-    name: 'User 2',
+    name: 'User Admin 2',
     last_name: 'Account 2',
     mail: `${Date.now()}2@mail.com`,
     cpf: genCpf(),
     dt_birth: new Date(),
     phone: '12345678910',
+    admin: true,
+    passwd: '123456'
+  });
+  const res3 = await app.services.user.save({
+    name: 'User No Admin',
+    last_name: 'Account 3',
+    mail: `${Date.now()}3@mail.com`,
+    cpf: genCpf(),
+    dt_birth: new Date(),
+    phone: '12345678910',
     admin: false,
     passwd: '123456'
-  })
+  });
 
   user = { ...res[0] };
   user.token = jwt.encode(user, 'Segredo!');
 
   user2 = { ...res2[0] };
+
+  user3 = { ...res3[0] };
+  user3.token = jwt.encode(user3, 'Segredo!');
+
 });
 
 test('Should list only the user schedules', () => {
@@ -75,6 +91,7 @@ test('Should insert a scheduling successfully', async () => {
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(201);
+      expect(user.admin).toBe(true);
     })
 });
 
@@ -118,11 +135,12 @@ test('Should change a scheduling', () => {
       dt_reservation: reservation,
       user_id: user.id
     }, ['id'])
-    .then((acc) => request(app).put(`${MAIN_ROUTE}/${acc[0].id}`)
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
       .set('authorization', `bearer ${user.token}`)
       .send({ check_in: new Date(), check_out: new Date() }))
     .then((res) => {
       expect(res.status).toBe(200);
+      expect(user.admin).toBe(true);
       expect(res.body.user_id).toBe(user.id);
     });
 });
@@ -150,6 +168,7 @@ test('Should delete a scheduling', () => {
       .set('authorization', `bearer ${user.token}`))
     .then((res) => {
       expect(res.status).toBe(204);
+      expect(user.admin).toBe(true);
     });
 });
 
@@ -165,5 +184,40 @@ test('Must not delete another user*s schedule', async () => {
     });
 });
 
-test.skip('Somente admin deve realizar check_in do usuario', () => { });
-test.skip('Somente admin deve realizar check_out do usuario', () => { });
+test.skip('Somente admin deve realizar check_in do usuario', async () => {
+  await app.db('schedules').del(); 
+
+  return app.db('schedules')
+    .insert({
+      dt_reservation: reservation,
+      user_id: user3.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user3.token}`)
+      .send({ check_in: new Date() }))
+    .then((res) => {
+      console.log(res.body)
+      expect(res.status).toBe(400);
+      expect(user3.admin).toBe(false);
+      expect(res.body.error).toBe('User is not an administrator');
+    });
+});
+
+test.skip('Somente admin deve realizar check_out do usuario', async () => { 
+  await app.db('schedules').del(); 
+
+  return app.db('schedules')
+    .insert({
+      dt_reservation: reservation,
+      user_id: user3.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user3.token}`)
+      .send({ check_out: new Date() }))
+    .then((res) => {
+      console.log(res.body)
+      expect(res.status).toBe(400);
+      expect(user3.admin).toBe(false);
+      expect(res.body.error).toBe('User is not an administrator');
+    });
+});

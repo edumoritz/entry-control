@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jwt-simple');
 
 module.exports = (app) => {
   const router = express.Router();
@@ -10,8 +11,9 @@ module.exports = (app) => {
   });
 
   router.post('/', async (req, res, next) => {
+    const userAdmin = decodeToken(req.headers.authorization.split(' ')[1]);
     try {
-      const result = await app.services.user.save(req.body);
+      const result = await app.services.user.save(req.body, userAdmin);
       return res.status(201).json(result[0]);
     } catch (err) {
       next(err);
@@ -19,4 +21,9 @@ module.exports = (app) => {
   });
 
   return router;
+}
+ 
+function decodeToken(token) {
+  var decoded = jwt.decode(token, 'Segredo!', 'HS256');
+  return decoded.admin;
 }

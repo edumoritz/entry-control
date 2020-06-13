@@ -6,8 +6,6 @@ module.exports = (app) => {
   };
 
   const findOne = (filter = {}) => {
-    // const id = app.db('schedules').where(filter).first();
-    // console.log(id)
     return app.db('schedules').where(filter).first();
   };
 
@@ -20,7 +18,8 @@ module.exports = (app) => {
     return app.db('schedules').insert(schedules, ['id', 'dt_reservation', 'check_in', 'check_out', 'user_id']);
   };
 
-  const update = (id, schedule) => {
+  const update = (id, schedule, isAdmin) => {
+    if (isAdmin === false) throw new ValidationError('User is not an administrator');
     return app.db('schedules').where({ id }).update(schedule, '*');
   }
 
@@ -32,3 +31,4 @@ module.exports = (app) => {
 
   return { findAll, save, findOne, update, remove };
 }
+
