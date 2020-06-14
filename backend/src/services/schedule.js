@@ -18,8 +18,12 @@ module.exports = (app) => {
     return app.db('schedules').insert(schedules, ['id', 'dt_reservation', 'check_in', 'check_out', 'user_id']);
   };
 
-  const update = (id, schedule, isAdmin) => {
-    if (isAdmin === false) throw new ValidationError('User is not an administrator');
+  const update = async (id, schedule, idDecode = 0) => {
+    if (idDecode > 0) {
+      const isAdmin = await app.db('users').where({ id: idDecode }).first();
+      if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
+    }
+
     return app.db('schedules').where({ id }).update(schedule, '*');
   }
 

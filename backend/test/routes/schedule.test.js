@@ -2,6 +2,7 @@ const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
 const { genCpf } = require('../utils');
+const { secret } = require('../../.env');
 
 const MAIN_ROUTE = '/v1/schedules';
 let user;
@@ -19,7 +20,7 @@ beforeAll(async () => {
     dt_birth: new Date(),
     phone: '12345678910',
     admin: true,
-    passwd: '123456'
+    passwd: '$2a$10$Xa9J4TaR2v9E27P/4BpMzuiKJomJuXh58.LhKJdQLW43pKyGXEo6.'
   });
   const res2 = await app.services.user.save({
     name: 'User Admin 2',
@@ -29,7 +30,7 @@ beforeAll(async () => {
     dt_birth: new Date(),
     phone: '12345678910',
     admin: true,
-    passwd: '123456'
+    passwd: '$2a$10$xoQ8gsyhZ45xWASbT6PhH.6CHmMj8acpnR/roIiYGZB.bTx3YyUkG'
   });
   const res3 = await app.services.user.save({
     name: 'User No Admin',
@@ -39,16 +40,16 @@ beforeAll(async () => {
     dt_birth: new Date(),
     phone: '12345678910',
     admin: false,
-    passwd: '123456'
+    passwd: '$2a$10$WREIWEtqxidJI7RvFzLlbu.KenH25aK87QDomtqfZCPrsjSlVyj/6'
   });
 
   user = { ...res[0] };
-  user.token = jwt.encode(user, 'Segredo!');
+  user.token = jwt.encode(user, secret.key);
 
   user2 = { ...res2[0] };
 
   user3 = { ...res3[0] };
-  user3.token = jwt.encode(user3, 'Segredo!');
+  user3.token = jwt.encode(user3, secret.key);
 
 });
 
@@ -67,7 +68,6 @@ test('Should list only the user schedules', () => {
     }));
 
 });
-
 
 test('Should not enter a schedule for the same user without having performed the check_out of the previous one', async () => {
   await app.db('schedules').del();
@@ -184,7 +184,7 @@ test('Must not delete another user*s schedule', async () => {
     });
 });
 
-test.skip('Somente admin deve realizar check_in do usuario', async () => {
+test('Only admin should perform user check_in', async () => {
   await app.db('schedules').del(); 
 
   return app.db('schedules')
@@ -195,15 +195,14 @@ test.skip('Somente admin deve realizar check_in do usuario', async () => {
     .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
       .set('authorization', `bearer ${user3.token}`)
       .send({ check_in: new Date() }))
-    .then((res) => {
-      console.log(res.body)
+    .then((res) => {      
       expect(res.status).toBe(400);
       expect(user3.admin).toBe(false);
       expect(res.body.error).toBe('User is not an administrator');
     });
 });
 
-test.skip('Somente admin deve realizar check_out do usuario', async () => { 
+test('Only admin should perform user check_out', async () => { 
   await app.db('schedules').del(); 
 
   return app.db('schedules')
@@ -215,7 +214,6 @@ test.skip('Somente admin deve realizar check_out do usuario', async () => {
       .set('authorization', `bearer ${user3.token}`)
       .send({ check_out: new Date() }))
     .then((res) => {
-      console.log(res.body)
       expect(res.status).toBe(400);
       expect(user3.admin).toBe(false);
       expect(res.body.error).toBe('User is not an administrator');

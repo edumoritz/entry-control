@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jwt-simple');
+const { secret } = require('../../.env');
 const RecursoIndevidoError = require('../errors/RecursoIndevidoError');
 
 module.exports = (app) => {
@@ -32,9 +33,10 @@ module.exports = (app) => {
       }).catch(err => next(err));
   });
 
-  router.put('/:id', async (req, res, next) => {        
-    const userAdmin = decodeToken(req.headers.authorization.split(' ')[1]);
-    app.services.schedule.update(req.params.id, req.body, userAdmin)
+  router.put('/:id', async (req, res, next) => {    
+    let reqHeader = req.headers.authorization;
+    var decoded = jwt.decode(reqHeader.split(' ')[1], secret.key);
+    app.services.schedule.update(req.params.id, req.body, decoded.id)
       .then(result => res.status(200).json(result[0]))
       .catch(err => next(err));
   });
@@ -46,9 +48,4 @@ module.exports = (app) => {
   });
 
   return router;
-}
-
-const decodeToken = (token) => {
-  var decoded = jwt.decode(token, 'Segredo!', 'HS256');
-  return decoded.admin;
 }

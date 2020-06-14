@@ -17,14 +17,19 @@ module.exports = (app) => {
     return bcrypt.hashSync(passwd, salt);
   };
 
-  const save = async (user, isAdmin) => {    
-    if (isAdmin === false) throw new ValidationError('User is not an administrator');
+  const save = async (user, idDecode = 0) => {  
+    
+    if (idDecode > 0) {
+      const isAdmin = await app.db('users').where({ id: idDecode }).first();
+      if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
+    }
+
     if (!user.name) throw new ValidationError('Name is a required attribute');
     if (!user.mail) throw new ValidationError('Email is a required attribute');
     if (!user.cpf) throw new ValidationError('CPF is a required attribute');
     if (!user.passwd) throw new ValidationError('Password is a required attribute');
     if (user.admin === null ||
-      user.admin === "undefined") throw new ValidationError('Admin is a required attribute');
+      user.admin === "undefined") throw new ValidationError('Admin is a required attribute');    
 
     const userDb = await findOne({ mail: user.mail });
     if (userDb) throw new ValidationError('Already exists a user with that email');    
