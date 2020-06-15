@@ -26,22 +26,22 @@
   <a href="#-license">License</a>
 </p>
 
-## 💻 Project
+## 💻  Project
 
 This app is an entrance and exit control based on a gym, the student needs to reserve the time that is available on the current day and to reserve a new time it is necessary to check_out the previous one.
 
-## 👾 Technologies
+## 👾  Technologies
 
 This project is being developed with the following technologies:
 
 - [Node.js][nodejs]
 - [Jestjs][Jestjs]
 
-## 🔖 Layout
+## 🔖  Layout
 
 An example of a layout not yet developed: [Figma](https://www.figma.com/file/N8uaLACYhQMEqlHVYGg6Eq/EntryControl?node-id=0%3A1).
 
-## 🌚 Backend
+## 🌚  Backend
 
 Note: Before starting the app must contain the .env file at the root of the project containing the database connection and the secret to jwt.
 
