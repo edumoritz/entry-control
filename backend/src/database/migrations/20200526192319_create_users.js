@@ -6,7 +6,7 @@ exports.up = (knex) => {
     t.string('last_name', 50);
     t.string('mail', 100).notNull().unique();
     t.string('cpf', 15).notNull().unique();
-    t.date('dt_birth');
+    t.datetime('dt_birth');
     t.string('phone', 15);
     t.boolean('admin').notNull();
     t.string('passwd').notNull();

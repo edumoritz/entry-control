@@ -20,7 +20,7 @@ module.exports = (app) => {
   const save = async (user, idDecode = 0) => {  
     
     if (idDecode > 0) {
-      const isAdmin = await app.db('users').where({ id: idDecode }).first();
+      const isAdmin = await findOne({ id: idDecode });
       if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
     }
 
