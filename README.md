@@ -43,7 +43,19 @@ An example of a layout not yet developed: [Figma](https://www.figma.com/file/N8u
 
 ## 🌚 Backend
 
+Note: Before starting the app must contain the .env file at the root of the project containing the database connection and the secret to jwt.
+
 The backend contains tests made with jest, to run the tests you need to use the command:
+```bash
+# Create the database
+$ npm run knex:migrate
+
+# Create the admin
+$ npm run knex:seed
+```
+
+After running seed, you must enter the passwords generated in the tests and set the secret in the .env file.
+
 ```bash
 # Go into the test 
 $ npm run secure-mode
