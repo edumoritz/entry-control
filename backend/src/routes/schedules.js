@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jwt-simple');
 const { secret } = require('../../.env');
 const RecursoIndevidoError = require('../errors/RecursoIndevidoError');
+const ValidationError = require('../errors/ValidationError');
 
 module.exports = (app) => {
   const router = express.Router();
@@ -9,6 +10,7 @@ module.exports = (app) => {
   router.param('id', (req, res, next) => {
     app.services.schedule.findOne({ id: req.params.id })
       .then((sh) => {
+        if (!sh) throw new ValidationError('This schedule was not found.');
         if (sh.user_id !== req.user.id) throw new RecursoIndevidoError();
         else next();
       }).catch(err => next(err));
@@ -26,14 +28,14 @@ module.exports = (app) => {
       .catch(err => next(err));
   });
 
-  router.post('/', (req, res, next) => {    
+  router.post('/', (req, res, next) => {
     app.services.schedule.save({ ...req.body, user_id: req.user.id })
       .then((result) => {
         return res.status(201).json(result[0]);
       }).catch(err => next(err));
   });
 
-  router.put('/:id', async (req, res, next) => {    
+  router.put('/:id', async (req, res, next) => {
     let reqHeader = req.headers.authorization;
     var decoded = jwt.decode(reqHeader.split(' ')[1], secret.key);
     app.services.schedule.update(req.params.id, req.body, decoded.id)

@@ -1,4 +1,3 @@
-const moment = require("moment");
 
 
 function genCpf() {
@@ -10,9 +9,5 @@ function genCpf() {
 
   return `${part1}.${part2}.${part3}-${dig1}${dig2}`;
 }
-function formatDateTime(date) {
-  return moment(date).format("MMM Do YYYY h:mm:ss a");
-}
 
-
-module.exports = { genCpf, formatDateTime }
+module.exports = { genCpf }

@@ -6,7 +6,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server",
+    "start": "nodemon src/server",
     "test": "jest",
     "secure-mode": "jest --watch --verbose=false",
     "knex:seed": "knex seed:run --env test",
@@ -16,6 +16,7 @@
   "keywords": [],
   "devDependencies": {
     "jest": "23.6.0",
+    "nodemon": "^2.0.4",
     "supertest": "3.3.0"
   },
   "dependencies": {
@@ -26,7 +27,6 @@
     "jwt-simple": "0.5.5",
     "knex": "0.19.5",
     "knex-logger": "^0.1.0",
-    "moment": "2.22.2",
     "passport": "0.4.0",
     "passport-jwt": "4.0.0",
     "pg": "7.7.1"

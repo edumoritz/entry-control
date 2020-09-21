@@ -9,7 +9,9 @@ module.exports = (app) => {
   };
 
   const findOne = (filter = {}) => {
-    return app.db('users').where(filter).first();
+    const findUser = app.db('users').where(filter).first();
+    if (!findUser) throw new ValidationError('User not found.');
+    return findUser;
   };
 
   const getPasswdHash = (passwd) => {
@@ -17,8 +19,8 @@ module.exports = (app) => {
     return bcrypt.hashSync(passwd, salt);
   };
 
-  const save = async (user, idDecode = 0) => {  
-    
+  const save = async (user, idDecode = 0) => {
+
     if (idDecode > 0) {
       const isAdmin = await findOne({ id: idDecode });
       if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
@@ -29,10 +31,10 @@ module.exports = (app) => {
     if (!user.cpf) throw new ValidationError('CPF is a required attribute');
     if (!user.passwd) throw new ValidationError('Password is a required attribute');
     if (user.admin === null ||
-      user.admin === "undefined") throw new ValidationError('Admin is a required attribute');    
+      user.admin === "undefined") throw new ValidationError('Admin is a required attribute');
 
     const userDb = await findOne({ mail: user.mail });
-    if (userDb) throw new ValidationError('Already exists a user with that email');    
+    if (userDb) throw new ValidationError('Already exists a user with that email');
 
     user.passwd = getPasswdHash(user.passwd);
 

@@ -6,7 +6,9 @@ module.exports = (app) => {
   };
 
   const findOne = (filter = {}) => {
-    return app.db('schedules').where(filter).first();
+    const findSchedule = app.db('schedules').where(filter).first();
+
+    return findSchedule;
   };
 
   const save = async (schedules) => {
@@ -28,9 +30,12 @@ module.exports = (app) => {
   }
 
   const remove = (id) => {
-    return app.db('schedules')
+    const removeSchedule = app.db('schedules')
       .where({ id })
       .del()
+
+    if (!removeSchedule) throw new ValidationError('This schedule was not found.');
+    return removeSchedule
   }
 
   return { findAll, save, findOne, update, remove };

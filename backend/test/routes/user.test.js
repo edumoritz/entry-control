@@ -39,10 +39,10 @@ beforeAll(async () => {
 })
 
 test('Should list all users', () => {
-  
+
   return request(app).get(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
-    .then((res) => {      
+    .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body.length).toBeGreaterThan(0);
     })
@@ -142,12 +142,12 @@ test('Only administrator user must register a new user', () => {
       admin: false,
       passwd: '123456'
     }).set('authorization', `bearer ${authUser.token}`)
-      .then((res) => {
-        expect(res.status).toBe(400);
-        expect(authUser.admin).toBe(false);
-        expect(res.body.error).toBe('User is not an administrator');
-      });
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(authUser.admin).toBe(false);
+      expect(res.body.error).toBe('User is not an administrator');
+    });
 });
 
-
+test('Only administrator can view users', () => { });
 

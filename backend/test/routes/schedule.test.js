@@ -11,7 +11,7 @@ let user3;
 const reservation = new Date();
 
 beforeAll(async () => {
-  
+
   const res = await app.services.user.save({
     name: 'User Admin',
     last_name: 'Account',
@@ -185,7 +185,7 @@ test('Must not delete another user*s schedule', async () => {
 });
 
 test('Only admin should perform user check_in', async () => {
-  await app.db('schedules').del(); 
+  await app.db('schedules').del();
 
   return app.db('schedules')
     .insert({
@@ -195,15 +195,15 @@ test('Only admin should perform user check_in', async () => {
     .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
       .set('authorization', `bearer ${user3.token}`)
       .send({ check_in: new Date() }))
-    .then((res) => {      
+    .then((res) => {
       expect(res.status).toBe(400);
       expect(user3.admin).toBe(false);
       expect(res.body.error).toBe('User is not an administrator');
     });
 });
 
-test('Only admin should perform user check_out', async () => { 
-  await app.db('schedules').del(); 
+test('Only admin should perform user check_out', async () => {
+  await app.db('schedules').del();
 
   return app.db('schedules')
     .insert({
@@ -219,3 +219,15 @@ test('Only admin should perform user check_out', async () => {
       expect(res.body.error).toBe('User is not an administrator');
     });
 });
+
+
+test.skip('You must not check-in less than the reservation date', () => { });
+
+test.skip('You must not check-out less than check-in date', () => { });
+
+test.skip('You must not check-out less than check-in date', () => { });
+
+test.skip('You must not make a reservation less than the current date', () => { });
+
+test.skip('You must not make changes to an appointment with check-out', () => { });
+

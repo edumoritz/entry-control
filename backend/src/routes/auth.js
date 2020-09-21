@@ -1,9 +1,8 @@
 const express = require('express');
 const jwt = require('jwt-simple');
 const bcrypt = require('bcrypt-nodejs');
+const { secret } = require('../../.env');
 const ValidationError = require('../errors/ValidationError');
-
-const secret = 'Segredo!';
 
 module.exports = (app) => {
   const router = express.Router();
@@ -18,7 +17,8 @@ module.exports = (app) => {
             name: user.name,
             mail: user.mail,
           };
-          const token = jwt.encode(payload, secret);
+
+          const token = jwt.encode(payload, secret.key);
           res.status(200).json({ token });
         } else throw new ValidationError('Invalid username or password');
       }).catch(err => next(err));

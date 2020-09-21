@@ -26,7 +26,7 @@ test('Should create a user by way of signup', () => {
 });
 
 
-test('Should store receive a token when logging', () => {
+test('Should receive a token when logging', () => {
   return app.services.user.save({
     name: 'Asteroide',
     last_name: 'Silverio',
