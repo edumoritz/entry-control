@@ -2,10 +2,16 @@ const bcrypt = require('bcrypt-nodejs');
 const ValidationError = require('../errors/ValidationError');
 
 module.exports = (app) => {
-  const findAll = () => {
-    return app.db('users').select(
+  const findAll = async (idDecode = 0) => {
+    if (idDecode > 0) {
+      const isAdmin = await findOne({ id: idDecode });
+      if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
+    }
+    const findAllUser = app.db('users').select(
       ['id', 'name', 'last_name', 'mail', 'cpf', 'dt_birth', 'phone', 'admin']
     );
+
+    return findAllUser;
   };
 
   const findOne = (filter = {}) => {

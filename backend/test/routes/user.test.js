@@ -149,5 +149,14 @@ test('Only administrator user must register a new user', () => {
     });
 });
 
-test('Only administrator can view users', () => { });
+test('Only administrator can view users', () => {
+  return request(app).get(MAIN_ROUTE)
+    .set('authorization', `bearer ${authUser.token}`)
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('User is not an administrator');
+    });
+});
+
+
 

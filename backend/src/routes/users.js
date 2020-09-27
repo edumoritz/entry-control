@@ -6,9 +6,12 @@ module.exports = (app) => {
   const router = express.Router();
 
   router.get('/', (req, res, next) => {
-    app.services.user.findAll()
+    let reqHeader = req.headers.authorization;
+    var decoded = jwt.decode(reqHeader.split(' ')[1], secret.key);
+    return app.services.user.findAll(decoded.id)
       .then(result => res.status(200).json(result))
       .catch(err => next(err));
+
   });
 
   router.get('/:id', (req, res, next) => {
@@ -30,4 +33,3 @@ module.exports = (app) => {
 
   return router;
 }
- 
