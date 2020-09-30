@@ -27,15 +27,28 @@ module.exports = (app) => {
       if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
     }
 
-    const { check_in } = schedule;
+    const { check_in, check_out } = schedule;
+
     const findSchedule = await app.db('schedules').where({ id }).first();
-    if (findSchedule) {
-      if (check_in && isBefore(new Date(check_in), findSchedule.dt_reservation)) {
-        throw new ValidationError('The check-in date must not be less than the reservation date.');
-      }
+
+    if (!findSchedule) {
+      throw new ValidationError('Reservation id not found.');
     }
 
 
+    if (check_in && isBefore(new Date(check_in), findSchedule.dt_reservation)) {
+      throw new ValidationError('The check-in date must not be less than the reservation date.');
+    }
+
+    console.log(check_out, ' - ', findSchedule.check_in)
+
+    if (check_out && !findSchedule.check_in) {
+      throw new ValidationError('You must check in before.');
+    }
+
+    if (check_out && isBefore(new Date(check_out), findSchedule.check_in)) {
+      throw new ValidationError('The check-out date must not be less than the check-in.');
+    }
 
     return app.db('schedules').where({ id }).update(schedule, '*');
   }

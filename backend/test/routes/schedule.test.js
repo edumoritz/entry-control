@@ -137,7 +137,7 @@ test('Should change a scheduling', () => {
     }, ['id'])
     .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
       .set('authorization', `bearer ${user.token}`)
-      .send({ check_in: new Date(), check_out: new Date() }))
+      .send({ check_in: new Date() }))
     .then((res) => {
       expect(res.status).toBe(200);
       expect(user.admin).toBe(true);
@@ -239,11 +239,42 @@ test('Should not check in less than the reservation date', async () => {
 
 });
 
-test.skip('You must not check-out less than check-in date', () => { });
+test('Should not check-out less than check-in date', async () => {
+  await app.db('schedules').del();
 
-test.skip('You must not check-out less than check-in date', () => { });
+  return app.db('schedules')
+    .insert({
+      dt_reservation: new Date('2020-09-30T10:00:00'),
+      check_in: new Date('2020-09-30T11:00:00'),
+      user_id: user.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user.token}`)
+      .send({ check_out: new Date('2020-09-30T10:30:00') }))
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('The check-out date must not be less than the check-in.');
+    });
+});
 
-test.skip('You must not make a reservation less than the current date', () => { });
+test('Should not check out if check-in is null', async () => {
+  await app.db('schedules').del();
 
-test.skip('You must not make changes to an appointment with check-out', () => { });
+  return app.db('schedules')
+    .insert({
+      dt_reservation: new Date('2020-09-30T10:00:00'),
+      user_id: user.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user.token}`)
+      .send({ check_out: new Date('2020-09-30T10:30:00') }))
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('You must check in before.');
+    });
+});
+
+test.skip('Should not make a reservation less than the current date', () => { });
+
+test.skip('Should not make changes to an appointment with check-out', () => { });
 
