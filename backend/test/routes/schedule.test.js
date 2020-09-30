@@ -221,7 +221,23 @@ test('Only admin should perform user check_out', async () => {
 });
 
 
-test.skip('You must not check-in less than the reservation date', () => { });
+test('Should not check in less than the reservation date', async () => {
+  await app.db('schedules').del();
+
+  return app.db('schedules')
+    .insert({
+      dt_reservation: new Date(2020, 1, 2),
+      user_id: user.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user.token}`)
+      .send({ check_in: new Date(2020, 1, 1) }))
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('The check-in date must not be less than the reservation date.');
+    });
+
+});
 
 test.skip('You must not check-out less than check-in date', () => { });
 

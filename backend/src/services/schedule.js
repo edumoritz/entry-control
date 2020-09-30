@@ -1,4 +1,5 @@
 const ValidationError = require('../errors/ValidationError');
+const isBefore = require('date-fns/isBefore');
 
 module.exports = (app) => {
   const findAll = (user_id) => {
@@ -25,6 +26,16 @@ module.exports = (app) => {
       const isAdmin = await app.db('users').where({ id: idDecode }).first();
       if (!isAdmin.admin) throw new ValidationError('User is not an administrator');
     }
+
+    const { check_in } = schedule;
+    const findSchedule = await app.db('schedules').where({ id }).first();
+    if (findSchedule) {
+      if (check_in && isBefore(new Date(check_in), findSchedule.dt_reservation)) {
+        throw new ValidationError('The check-in date must not be less than the reservation date.');
+      }
+    }
+
+
 
     return app.db('schedules').where({ id }).update(schedule, '*');
   }
