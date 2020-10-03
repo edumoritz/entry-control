@@ -3,6 +3,7 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 const { genCpf } = require('../utils');
 const { secret } = require('../../.env');
+const isBefore = require('date-fns/isBefore');
 
 const MAIN_ROUTE = '/v1/schedules';
 let user;
@@ -90,8 +91,11 @@ test('Should insert a scheduling successfully', async () => {
     .send({ dt_reservation: reservation })
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
-      expect(res.status).toBe(201);
-      expect(user.admin).toBe(true);
+      if (!isBefore(reservation, new Date())) {
+        expect(res.status).toBe(201);
+        expect(user.admin).toBe(true);
+      }
+
     })
 });
 
@@ -274,7 +278,42 @@ test('Should not check out if check-in is null', async () => {
     });
 });
 
-test.skip('Should not make a reservation less than the current date', () => { });
+test('Should not make a reservation less than the current date', async () => {
+  await app.db('schedules').del();
 
-test.skip('Should not make changes to an appointment with check-out', () => { });
+  const testDate = new Date('2020-10-02T10:00:00');
+
+  return request(app).post(MAIN_ROUTE)
+    .send({
+      dt_reservation: testDate,
+      user_id: user.id
+    })
+    .set('authorization', `bearer ${user.token}`)
+    .then((res) => {
+
+      if (isBefore(testDate, new Date())) {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('The reservation must be at a future date.');
+      }
+    })
+});
+
+test('Should not make changes to an appointment with check-out', async () => {
+  await app.db('schedules').del();
+
+  return app.db('schedules')
+    .insert({
+      dt_reservation: new Date(),
+      check_in: new Date(),
+      check_out: new Date(),
+      user_id: user.id
+    }, ['id'])
+    .then((sh) => request(app).put(`${MAIN_ROUTE}/${sh[0].id}`)
+      .set('authorization', `bearer ${user.token}`)
+      .send({ check_out: new Date() }))
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('This reservation is finalized.');
+    });
+});
 

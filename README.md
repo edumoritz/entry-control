@@ -1,7 +1,4 @@
 <h1 align="center"> Entry Control </h1>
-<h4 align="center"> 
-	🚧 EntryControl In progress.. 🚧
-</h4>
 <p align="center">
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/edumoritz/entry-control?color=orange">
 
@@ -21,14 +18,13 @@
 <p align="center">
   <a href="#-project">Project</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-technologies">Technologies</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-layout">Layout</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-backend">Backend</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-license">License</a>
 </p>
 
 ## 💻  Project
 
-This app is an entrance and exit control based on a gym, the student needs to reserve the time that is available on the current day and to reserve a new time it is necessary to check_out the previous one.
+This is a backend of tests of control of entry and exit of any establishment, with many test cases in jest, it is possible to make the reservation, make the check-in and the checkout.
 
 ## 👾  Technologies
 
@@ -36,10 +32,7 @@ This project is being developed with the following technologies:
 
 - [Node.js][nodejs]
 - [Jestjs][Jestjs]
-
-## 🔖  Layout
-
-An example of a layout not yet developed: [Figma](https://www.figma.com/file/N8uaLACYhQMEqlHVYGg6Eq/EntryControl?node-id=0%3A1).
+- [date-fns][datefns]
 
 ## 🌚  Backend
 
@@ -68,3 +61,4 @@ Made with ♥ by Eduardo Moritz :wave: [Get in touch!](https://www.linkedin.com/
 
 [nodejs]: https://nodejs.org/
 [jestjs]: https://jestjs.io/
+[datefns]: https://date-fns.org/

@@ -18,6 +18,10 @@ module.exports = (app) => {
     const checkOut = await findOne({ user_id: schedules.user_id, check_out: null })
     if (checkOut) throw new ValidationError('Should check_out the old schedule');
 
+    if (isBefore(new Date(schedules.dt_reservation), new Date())) {
+      throw new ValidationError('The reservation must be at a future date.');
+    }
+
     return app.db('schedules').insert(schedules, ['id', 'dt_reservation', 'check_in', 'check_out', 'user_id']);
   };
 
@@ -35,12 +39,14 @@ module.exports = (app) => {
       throw new ValidationError('Reservation id not found.');
     }
 
+    if (findSchedule.check_out) {
+      throw new ValidationError('This reservation is finalized.');
+    }
+
 
     if (check_in && isBefore(new Date(check_in), findSchedule.dt_reservation)) {
       throw new ValidationError('The check-in date must not be less than the reservation date.');
     }
-
-    console.log(check_out, ' - ', findSchedule.check_in)
 
     if (check_out && !findSchedule.check_in) {
       throw new ValidationError('You must check in before.');
