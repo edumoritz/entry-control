@@ -13,7 +13,15 @@
     "knex:rollback": "knex migrate:rollback --env test",
     "knex:migrate": "knex migrate:latest --env test"
   },
-  "keywords": [],
+  "keywords": [
+    "seed",
+    "seeds",
+    "knex",
+    "seeders",
+    "test",
+    "auth",
+    "jwt",
+  ],
   "devDependencies": {
     "jest": "23.6.0",
     "nodemon": "^2.0.4",
